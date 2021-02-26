@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r} 
+library(tidyr)
+library(tidyverse)
+library(dbplyr)
+library(plyr)
+library(ggplot2)
+
+
+plastics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-26/plastics.csv')
+
+```
+
+Data exploration:
+```{r}
+summary(plastics)
+
+```
+
+
+testing 
+
+
+
+
+
+
+
+
+
+
+
+Output:
