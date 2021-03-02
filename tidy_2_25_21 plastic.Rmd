@@ -11,6 +11,8 @@ library(tidyverse)
 library(dbplyr)
 library(plyr)
 library(ggplot2)
+library(GGally)
+library(ggformula)
 
 
 plastics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-26/plastics.csv')
@@ -20,8 +22,17 @@ plastics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/t
 Data exploration:
 ```{r}
 summary(plastics)
-
+glimpse(plastics)
+#two categorical, one time, eleven variables
 ```
+
+```{r}
+
+plastics %>% group_by(country) %>% summarise(mean(year))
+
+plastics %>% group_by(country) %>% gf_histogram(object = plastics$pet)
+```
+
 
 
 testing 
