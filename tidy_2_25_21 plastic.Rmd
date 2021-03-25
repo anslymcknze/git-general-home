@@ -29,6 +29,8 @@ glimpse(plastics)
 ```{r}
 
 plastics %>% group_by(country) %>% summarise(mean(year))
+count(plastics$country)
+plastics %>% group_by(country) %>% ggplot() + geom_col(~country)
 
 plastics %>% group_by(country) %>% gf_histogram(object = plastics$pet)
 ```
