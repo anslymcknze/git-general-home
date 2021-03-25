@@ -1,0 +1,86 @@
+---
+title: "tidy_3_24_2021"
+author: "Ainsley"
+date: "3/24/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(mdsr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+
+milk_products <- tidytuesdayR::tt_load('2019-01-29')
+cheese <- milk_products$clean_cheese
+cheese_tidy <- gather(cheese, key = Cheese_Type, value = lb_per_person, - Year)
+```
+
+
+```{r}
+Years = nrow(cheese)
+Ave.Cheese.Per.Person <- cheese_tidy %>% group_by(Cheese_Type) %>% summarise(mean(lb_per_person))
+
+Ave.Cheese.Per.Person %>% ggplot(aes(x= Cheese_Type, y = lb_per_person)) +
+  geom_col() + ggtitle("Cheese Pounds per person!!")
+
+cheese_tidy %>% ggplot(aes(x= Cheese_Type, y = lb_per_person)) +
+  geom_col() + ggtitle("Cheese Pounds per person!!")
+```
+
+
+Group plot facetted by cheese of the year vs pound per person
+```{r}
+cheese_tidy %>% group_by(Cheese_Type) %>% 
+  ggplot(aes(x= Year, y = lb_per_person, fill = Cheese_Type)) +
+  geom_col() + ggtitle("Cheese Pounds per person!!") +
+  facet_wrap(~Cheese_Type, scales = "free") +
+  theme(legend.position = "none") +
+  ylab("Pound per person")
+```
+
+
+Shiny...?
+```{r}
+library(shiny)
+```
+
+```{r}
+ui <- fluidPage(
+  pickerInput(
+   inputId = "type",
+   label = "Cheese_Type", 
+    choices = cheese_tidy$Cheese_Type),
+  plotOutput("Year_Amount")
+)
+
+server <- function(input, output) {
+  output$Year_Amount <- renderPlot({
+  cheese_tidy %>% filter(input$type) %>% 
+    ggplot(aes(x= Year, y = lb_per_person)) +
+    geom_col() + ggtitle("Cheese Pounds per person!!") +
+    ylab("Pound per person")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+
+
+
+
+
+
+
+
+
+
+
