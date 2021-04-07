@@ -1,0 +1,55 @@
+---
+title: "PUBG_weapon_stats"
+author: "Ainsley"
+date: "4/7/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(tidyverse)
+library(dplyr)
+library(plyr)
+library(ggplot2)
+library(ggformula)
+```
+
+```{r}
+pubg_stats <- read.csv("C:\\Users\\axmac\\Desktop\\git-general-home\\pubg-weapon-stats.csv") %>% select(Weapon.Name:Fire.Mode) %>% mutate(Single = str_detect(Fire.Mode, "Single"), Automatic = str_detect(Fire.Mode, "Automatic"), Burst = str_detect(Fire.Mode, "Burst")) 
+
+#one way but you get wrong columns try str_detect
+#%>% separate(col = Fire.Mode, into = c("Single", "Automatic", "Burst"), sep = ",", remove = FALSE)
+
+
+pubg_stats <- pubg_stats %>% select(everything, WT)
+```
+
+Categorical Analysis
+```{r}
+pubg_stats %>% group_by(Weapon.Type) %>% count(Weapon.Type)
+pubg_stats %>% ggplot(aes(x = Weapon.Type)) + geom_bar() + ggtitle("Weapon Type") + theme(axis.text.x = element_text(angle = 20, vjust = .8) ) 
+
+## gather function for fire modes and graph weapon type with stacked color for each fire type
+```
+
+Top 5s 
+```{r}
+ps <- pubg_stats %>% rename(Name = Weapon.Name)
+
+# learn how to make a function to run through all the categories
+d <- ps %>% arrange(desc(Damage)) %>% select(Name, Damage) %>% head(5)
+mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Name, Magazine.Capacity) %>% head(5)
+r <- ps %>% arrange(desc(Range)) %>% select(Name, Range) %>% head(5)
+bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Name, Bullet.Speed) %>% head(5)
+rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Name, Rate.of.Fire) %>% head(5)
+stk_c <- ps %>% arrange(desc(Shots.to.Kill..Chest.)) %>% select(Name, Shots.to.Kill..Chest.) %>% head(5)
+stk_h <- ps %>% arrange(desc(Shots.to.Kill..Head.)) %>% select(Name, Shots.to.Kill..Head.) %>% head(5)
+dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Name, Damage.Per.Second) %>% head(5)
+
+top_fives <- full_join(d, mc, by = "Name")
+                     , r, bsp, rof, stk_c, stk_h, dps)
+```
+
