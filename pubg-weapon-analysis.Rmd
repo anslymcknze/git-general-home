@@ -18,7 +18,8 @@ library(ggformula)
 ```
 
 ```{r}
-pubg_stats <- read.csv("C:\\Users\\axmac\\Desktop\\git-general-home\\pubg-weapon-stats.csv") %>% select(Weapon.Name:Fire.Mode) %>% mutate(Single = str_detect(Fire.Mode, "Single"), Automatic = str_detect(Fire.Mode, "Automatic"), Burst = str_detect(Fire.Mode, "Burst")) 
+pubg_stats <- read.csv("C:\\Users\\axmac\\Desktop\\git-general-home\\pubg-weapon-stats.csv")
+pubg_stats <- pubg_stats %>% select(Weapon.Name:Fire.Mode) %>% mutate(Single = str_detect(Fire.Mode, "Single"), Automatic = str_detect(Fire.Mode, "Automatic"), Burst = str_detect(Fire.Mode, "Burst")) 
 
 #one way but you get wrong columns try str_detect
 #%>% separate(col = Fire.Mode, into = c("Single", "Automatic", "Burst"), sep = ",", remove = FALSE)
@@ -35,6 +36,9 @@ pubg_stats %>% ggplot(aes(x = Weapon.Type)) + geom_bar() + ggtitle("Weapon Type"
 ## gather function for fire modes and graph weapon type with stacked color for each fire type
 ```
 
+
+
+
 Top 5s 
 ```{r}
 ### fix problem with rename function
@@ -43,15 +47,28 @@ ps <- pubg_stats %>% rename(Weapon.Name)
 # learn how to make a function to run through all the categories
 Rank <- data.frame(1:5) %>% select(Rank = X1.5)
 
+## make sure to adjust for things where you want to minimize the stat like shots to kill
+# you would want to minimize to find the best weapons
+## check also if there are ties... do you then include those too?
+
 d <- ps %>% arrange(desc(Damage)) %>% select(Weapon.Name, Damage) %>% head(5) 
-        
 mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Weapon.Name, Magazine.Capacity) %>% head(5)
-r <- ps %>% arrange(desc(Range)) %>% select(Weapon.Name, Range) %>% head(5)
-bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Weapon.Name, Bullet.Speed) %>% head(5)
-rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Weapon.Name, Rate.of.Fire) %>% head(5)
-stk_c <- ps %>% arrange(desc(Shots.to.Kill..Chest.)) %>% select(Weapon.Name, Shots.to.Kill..Chest.) %>% head(5)
-stk_h <- ps %>% arrange(desc(Shots.to.Kill..Head.)) %>% select(Weapon.Name, Shots.to.Kill..Head.) %>% head(5)
 dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Weapon.Name, Damage.Per.Second) %>% head(5)
+bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Weapon.Name, Bullet.Speed) %>% head(5)
+
+#you want both shots to kill to be smaller for more effective
+stk_c <- ps %>% arrange(Shots.to.Kill..Chest.) %>% select(Weapon.Name, Shots.to.Kill..Chest.) %>% head(5)
+stk_h <- ps %>% arrange(Shots.to.Kill..Head.) %>% select(Weapon.Name, Shots.to.Kill..Head.) %>% head(5)
+
+#be careful with range in terms of top five bc it'll depend on long range vs short range
+r <- ps %>% arrange(desc(Range)) %>% select(Weapon.Name, Range) %>% head(5)
+
+## check about this do you want small or larger rate of fire
+rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Weapon.Name, Rate.of.Fire) %>% head(5)
+
+
+
+
 
 
 # add rank variable
