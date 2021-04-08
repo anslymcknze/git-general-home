@@ -24,7 +24,7 @@ pubg_stats <- read.csv("C:\\Users\\axmac\\Desktop\\git-general-home\\pubg-weapon
 #%>% separate(col = Fire.Mode, into = c("Single", "Automatic", "Burst"), sep = ",", remove = FALSE)
 
 
-pubg_stats <- pubg_stats %>% select(everything, WT)
+#pubg_stats <- pubg_stats %>% select(everything, WT)
 ```
 
 Categorical Analysis
@@ -37,19 +37,43 @@ pubg_stats %>% ggplot(aes(x = Weapon.Type)) + geom_bar() + ggtitle("Weapon Type"
 
 Top 5s 
 ```{r}
-ps <- pubg_stats %>% rename(Name = Weapon.Name)
+### fix problem with rename function
+ps <- pubg_stats %>% rename(Weapon.Name)
 
 # learn how to make a function to run through all the categories
-d <- ps %>% arrange(desc(Damage)) %>% select(Name, Damage) %>% head(5)
-mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Name, Magazine.Capacity) %>% head(5)
-r <- ps %>% arrange(desc(Range)) %>% select(Name, Range) %>% head(5)
-bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Name, Bullet.Speed) %>% head(5)
-rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Name, Rate.of.Fire) %>% head(5)
-stk_c <- ps %>% arrange(desc(Shots.to.Kill..Chest.)) %>% select(Name, Shots.to.Kill..Chest.) %>% head(5)
-stk_h <- ps %>% arrange(desc(Shots.to.Kill..Head.)) %>% select(Name, Shots.to.Kill..Head.) %>% head(5)
-dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Name, Damage.Per.Second) %>% head(5)
+Rank <- data.frame(1:5) %>% select(Rank = X1.5)
 
-top_fives <- full_join(d, mc, by = "Name")
-                     , r, bsp, rof, stk_c, stk_h, dps)
+d <- ps %>% arrange(desc(Damage)) %>% select(Weapon.Name, Damage) %>% head(5) 
+        
+mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Weapon.Name, Magazine.Capacity) %>% head(5)
+r <- ps %>% arrange(desc(Range)) %>% select(Weapon.Name, Range) %>% head(5)
+bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Weapon.Name, Bullet.Speed) %>% head(5)
+rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Weapon.Name, Rate.of.Fire) %>% head(5)
+stk_c <- ps %>% arrange(desc(Shots.to.Kill..Chest.)) %>% select(Weapon.Name, Shots.to.Kill..Chest.) %>% head(5)
+stk_h <- ps %>% arrange(desc(Shots.to.Kill..Head.)) %>% select(Weapon.Name, Shots.to.Kill..Head.) %>% head(5)
+dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Weapon.Name, Damage.Per.Second) %>% head(5)
+
+
+# add rank variable
+d <- d %>% cbind(Rank)
+mc <- mc %>% cbind(Rank)
+r <- r %>% cbind(Rank)
+bsp <- bsp %>% cbind(Rank)
+rof <- rof %>% cbind(Rank)
+stk_c <- stk_c %>% cbind(Rank)
+stk_h <- stk_h %>% cbind(Rank)
+dps <- dps %>% cbind(Rank)
+
+
+
+top_fives <- full_join(d, mc, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(r, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(bsp, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(rof, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(stk_c, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(stk_h, by = "Weapon.Name")
+top_fives <- top_fives %>% full_join(dps, by = "Weapon.Name")
+
+top_five_ranks <- top_fives %>% select(Weapon.Name, starts_with("Rank"))
 ```
 
