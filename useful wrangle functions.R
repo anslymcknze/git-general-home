@@ -36,3 +36,6 @@ Helpful websites:
   https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0
 https://shiny.rstudio.com/gallery/widget-gallery.html
 
+
+Color references for ggplot 
+http://sape.inf.usi.ch/quick-reference/ggplot2/colour
