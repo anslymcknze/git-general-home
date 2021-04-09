@@ -19,7 +19,7 @@ library(ggformula)
 
 ```{r}
 pubg_stats <- read.csv("C:\\Users\\axmac\\Desktop\\git-general-home\\pubg-weapon-stats.csv")
-pubg_stats <- pubg_stats %>% select(Weapon.Name:Fire.Mode) %>% mutate(Single = str_detect(Fire.Mode, "Single"), Automatic = str_detect(Fire.Mode, "Automatic"), Burst = str_detect(Fire.Mode, "Burst")) 
+pubg_stats <- pubg_stats %>% select(Name = Weapon.Name, Weapon.Type:Fire.Mode) %>% mutate(Single = str_detect(Fire.Mode, "Single"), Automatic = str_detect(Fire.Mode, "Automatic"), Burst = str_detect(Fire.Mode, "Burst")) 
 
 #one way but you get wrong columns try str_detect
 #%>% separate(col = Fire.Mode, into = c("Single", "Automatic", "Burst"), sep = ",", remove = FALSE)
@@ -27,6 +27,45 @@ pubg_stats <- pubg_stats %>% select(Weapon.Name:Fire.Mode) %>% mutate(Single = s
 
 #pubg_stats <- pubg_stats %>% select(everything, WT)
 ```
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+
+Creating and Investigating Range variables
+```{r}
+pubg_stats %>% ggplot(aes(x = Range, fill = Weapon.Type))  +
+  geom_histogram(binwidth = 25, position = "stack", colour = "gray36") +
+  geom_vline(xintercept = 325, size = .70) + 
+  labs(title = "Range Assignments", 
+  subtitle = "Weapon ranges less than or equal to 300 are short range.
+  Otherwise they are long range weapons.", 
+  caption = "Black line separates short range and long range weapons") +
+  scale_y_continuous(breaks=c(0,2,4,6,8,9))
+# should i keep the y max tick of 9 or take it out
+
+# technically short range is under 300m, o.w. long range
+nrow(pubg_stats %>% filter(Range <= 300)) #short range
+nrow(pubg_stats %>% filter(Range > 300)) #long range
+```
+It appears that short-range weapons include shotguns, pistols, and submachine guns. Mid-range weapons include assault rifles and light machine guns. Long-range weapons are sniper rifles and marksman rifles.
+
+
+```{r}
+pubg_stats %>% ggplot(aes(x = Range, y = Damage.Per.Second, col = Weapon.Type))+
+  geom_point(aes( alpha = .2)) + geom_text(aes(label = Name, color = Weapon.Type), size = 3, vjust = .2, hjust = -.2 ) + 
+  xlim(0, 1000) 
+
+pubg_stats %>% ggplot(aes(x = Shots.to.Kill..Chest., y = Damage.Per.Second, col = Weapon.Type))+
+  geom_point(aes( alpha = .2)) + geom_text(aes(label = Name, color = Weapon.Type), size = 3, vjust = .2, hjust = -.2 ) 
+```
+
+
+
+
 
 Categorical Analysis
 ```{r}
@@ -42,7 +81,7 @@ pubg_stats %>% ggplot(aes(x = Weapon.Type)) + geom_bar() + ggtitle("Weapon Type"
 Top 5s 
 ```{r}
 ### fix problem with rename function
-ps <- pubg_stats %>% rename(Weapon.Name)
+ps <- pubg_stats %>% rename(Name)
 
 # learn how to make a function to run through all the categories
 Rank <- data.frame(1:5) %>% select(Rank = X1.5)
@@ -51,20 +90,20 @@ Rank <- data.frame(1:5) %>% select(Rank = X1.5)
 # you would want to minimize to find the best weapons
 ## check also if there are ties... do you then include those too?
 
-d <- ps %>% arrange(desc(Damage)) %>% select(Weapon.Name, Damage) %>% head(5) 
-mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Weapon.Name, Magazine.Capacity) %>% head(5)
-dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Weapon.Name, Damage.Per.Second) %>% head(5)
-bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Weapon.Name, Bullet.Speed) %>% head(5)
+d <- ps %>% arrange(desc(Damage)) %>% select(Name, Damage) %>% head(5) 
+mc <- ps %>% arrange(desc(Magazine.Capacity)) %>% select(Name, Magazine.Capacity) %>% head(5)
+dps <- ps %>% arrange(desc(Damage.Per.Second)) %>% select(Name, Damage.Per.Second) %>% head(5)
+bsp <- ps %>% arrange(desc(Bullet.Speed)) %>% select(Name, Bullet.Speed) %>% head(5)
 
 #you want both shots to kill to be smaller for more effective
-stk_c <- ps %>% arrange(Shots.to.Kill..Chest.) %>% select(Weapon.Name, Shots.to.Kill..Chest.) %>% head(5)
-stk_h <- ps %>% arrange(Shots.to.Kill..Head.) %>% select(Weapon.Name, Shots.to.Kill..Head.) %>% head(5)
+stk_c <- ps %>% arrange(Shots.to.Kill..Chest.) %>% select(Name, Shots.to.Kill..Chest.) %>% head(5)
+stk_h <- ps %>% arrange(Shots.to.Kill..Head.) %>% select(Name, Shots.to.Kill..Head.) %>% head(5)
 
 #be careful with range in terms of top five bc it'll depend on long range vs short range
-r <- ps %>% arrange(desc(Range)) %>% select(Weapon.Name, Range) %>% head(5)
+r <- ps %>% arrange(desc(Range)) %>% select(Name, Range) %>% head(5)
 
 ## check about this do you want small or larger rate of fire
-rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Weapon.Name, Rate.of.Fire) %>% head(5)
+rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Name, Rate.of.Fire) %>% head(5)
 
 
 
@@ -83,14 +122,14 @@ dps <- dps %>% cbind(Rank)
 
 
 
-top_fives <- full_join(d, mc, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(r, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(bsp, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(rof, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(stk_c, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(stk_h, by = "Weapon.Name")
-top_fives <- top_fives %>% full_join(dps, by = "Weapon.Name")
+top_fives <- full_join(d, mc, by = "Name")
+top_fives <- top_fives %>% full_join(r, by = "Name")
+top_fives <- top_fives %>% full_join(bsp, by = "Name")
+top_fives <- top_fives %>% full_join(rof, by = "Name")
+top_fives <- top_fives %>% full_join(stk_c, by = "Name")
+top_fives <- top_fives %>% full_join(stk_h, by = "Name")
+top_fives <- top_fives %>% full_join(dps, by = "Name")
 
-top_five_ranks <- top_fives %>% select(Weapon.Name, starts_with("Rank"))
+top_five_ranks <- top_fives %>% select(Name, starts_with("Rank"))
 ```
 
