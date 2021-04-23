@@ -39,3 +39,9 @@ https://shiny.rstudio.com/gallery/widget-gallery.html
 
 Color references for ggplot 
 http://sape.inf.usi.ch/quick-reference/ggplot2/colour
+https://htmlcolorcodes.com/color-picker/
+  
+For python Seaborn
+https://elitedatascience.com/python-seaborn-tutorial
+
+
