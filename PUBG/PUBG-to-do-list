@@ -3,6 +3,7 @@ Things to do:
 1. Find way to get Melee weapons a range. Maybe using an if statement. Then add to the Range.Type creation code to create a 'close range' one.
 
 2. Find way to correct for if there are guns that tie for the 5th position of the top 5 part and how to include those (say 3 guns have the same shots to kill head for the 5th place)
+----- one way you could do this is to make a data frame that is count (repeats) then make a new variable that is equal to the row number then merge those that data set with the original one
 
 3.
 

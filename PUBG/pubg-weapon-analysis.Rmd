@@ -31,13 +31,6 @@ pubg_stats <- pubg_stats %>% select(Name = Weapon.Name, Weapon.Type:Fire.Mode) %
 #pubg_stats <- pubg_stats %>% select(everything, WT)
 ```
 
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-
-
 Creating and Investigating Range variables
 ```{r}
 pubg_stats %>% ggplot(aes(x = Range, fill = Weapon.Type))  +
@@ -66,7 +59,15 @@ pubg_stats <-pubg_stats %>%
 It appears that short-range weapons include shotguns, pistols, and submachine guns. Mid-range weapons include assault rifles and light machine guns. Long-range weapons are sniper rifles and marksman rifles.
 
 
+=========================================================================================
+=========================================================================================
+=========================================================================================
 
+                  Moving into creating things out of the data
+                  
+=========================================================================================
+=========================================================================================
+=========================================================================================
 
 ```{r}
 pubg_stats %>% ggplot(aes(x = Range, y = Damage.Per.Second, col = Weapon.Type))+
@@ -91,8 +92,39 @@ pubg_stats %>% ggplot(aes(x = Weapon.Type)) + geom_bar() + ggtitle("Weapon Type"
 
 
 
+=========================================================================================
+=========================================================================================
+=========================================================================================
 
-Top 5s 
+                  Doing a Top Fives Section
+                  
+=========================================================================================
+=========================================================================================
+=========================================================================================
+
+
+
+```{r, top 5 adjusted}
+ps <- pubg_stats #%>% select(Name, Damage) %>% mutate(Rank = 0)
+
+Rb <- count(ps$Damage) %>% arrange(desc(x)) %>% head(6) %>%
+  mutate(Rank = rownames(Rb))
+# make function that sets if Rb$x == Damage then set Rank variable = rowname running loop from Rank 1 to Rank 5 augmenting 
+  #the ps dataframe 
+
+top5set <- function(vrble){
+  a <- vrble
+  get5rank <- count(ps[, vrble]) 
+  get5rank <- get5rank %>% arrange(desc(x)) %>% head(6) %>%
+    mutate(Rank = rownames((get5rank)))
+}
+
+top5set(Damage)
+
+```
+
+
+
 ```{r}
 ### fix problem with rename function
 ps <- pubg_stats %>% rename(Name)
@@ -118,10 +150,6 @@ r <- ps %>% arrange(desc(Range)) %>% select(Name, Range) %>% head(5)
 
 ## check about this do you want small or larger rate of fire
 rof <- ps %>% arrange(desc(Rate.of.Fire)) %>% select(Name, Rate.of.Fire) %>% head(5)
-
-
-
-
 
 
 # add rank variable
