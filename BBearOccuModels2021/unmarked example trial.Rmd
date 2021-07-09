@@ -16,6 +16,10 @@ library(tidyr)
 library(dplyr)
 ```
 
+
+
+
+Example scratched from scratch
 ```{r}
 data <- read_excel("C:\\Users\\axmac\\Downloads\\Practice GC unmarked.xlsx")
 data1 <- data %>% mutate_if(is.numeric , replace_na, replace = 0)
@@ -29,8 +33,9 @@ dframe <- unmarkedFrameOccu(y = data1[,2:3], siteCovs = , obsCovs = )
 
 
 
-https://doi90.github.io/lodestar/fitting-occupancy-models-with-unmarked.html 
 
+
+Simple example from ("?unmarkedFrameOccu") 
 ```{r, example set up}
 R <- 4 # number of sites
 J <- 3 # number of visits
@@ -57,7 +62,6 @@ obs.covs <- list(
       'a','b','a'), nrow=R, ncol=J, byrow=TRUE))
 obs.covs
 ```
-
 ```{r, example execution}
 umf <- unmarkedFrameOccu(y=y, siteCovs=site.covs, 
     obsCovs=obs.covs)   # organize data
@@ -66,4 +70,13 @@ summary(umf)            # summarize
 fm <- occu(~1 ~1, umf)  # fit a model
 fm
 ```
+
+
+More applicable example from 
+https://doi90.github.io/lodestar/fitting-occupancy-models-with-unmarked.html 
+
+
+
+
+
 
